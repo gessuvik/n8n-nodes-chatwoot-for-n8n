@@ -3,6 +3,13 @@
 	"version": "0.2.0",
 	"description": "Complete Chatwoot community nodes for n8n: triggers plus intuitive contact, conversation, message, attribute, label, agent, team, and inbox actions",
 	"homepage": "https://www.npmjs.com/package/n8n-nodes-chatwoot-for-n8n",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/gessuvik/n8n-nodes-chatwoot-for-n8n.git"
+	},
+	"bugs": {
+		"url": "https://github.com/gessuvik/n8n-nodes-chatwoot-for-n8n/issues"
+	},
 	"license": "MIT",
 	"keywords": [
 		"n8n-community-node-package",
