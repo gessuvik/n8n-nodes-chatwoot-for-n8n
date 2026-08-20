@@ -1,0 +1,69 @@
+{
+	"name": "n8n-nodes-chatwoot-for-n8n",
+	"version": "0.2.0",
+	"description": "Complete Chatwoot community nodes for n8n: triggers plus intuitive contact, conversation, message, attribute, label, agent, team, and inbox actions",
+	"homepage": "https://www.npmjs.com/package/n8n-nodes-chatwoot-for-n8n",
+	"license": "MIT",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n",
+		"chatwoot",
+		"crm",
+		"contact",
+		"conversation",
+		"message",
+		"webhook",
+		"trigger",
+		"actions"
+	],
+	"author": {
+		"name": "Chatwoot for n8n contributors",
+		"email": "noreply@users.noreply.github.com"
+	},
+	"engines": {
+		"node": ">=22.0.0"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"format": "prettier --write credentials nodes test *.json *.js *.mjs *.md docs",
+		"format:check": "prettier --check credentials nodes test *.json *.js *.mjs *.md docs",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"typecheck": "tsc --noEmit --incremental false && tsc --project tsconfig.test.json --noEmit --incremental false",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"files": [
+		"dist",
+		"docs",
+		"icons/ASSET-NOTICE.md",
+		"CHANGELOG.md"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/ChatwootApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/Chatwoot/Chatwoot.node.js",
+			"dist/nodes/Chatwoot/ChatwootTrigger.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "0.44.3",
+		"@types/node": "^24.0.0",
+		"eslint": "9.39.4",
+		"n8n-workflow": "2.16.0",
+		"prettier": "3.8.3",
+		"typescript": "5.9.3",
+		"vitest": "4.1.11"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}

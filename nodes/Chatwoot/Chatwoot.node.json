@@ -1,0 +1,19 @@
+{
+	"node": "n8n-nodes-chatwoot-for-n8n",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Communication"],
+	"alias": ["customer support", "crm", "lead", "contact", "conversation", "message"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://developers.chatwoot.com/api-reference/introduction"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://developers.chatwoot.com/api-reference/introduction"
+			}
+		]
+	}
+}

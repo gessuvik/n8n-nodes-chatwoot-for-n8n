@@ -1,0 +1,19 @@
+{
+	"node": "n8n-nodes-chatwoot-for-n8n",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Communication"],
+	"alias": ["customer support", "inbox", "message", "webhook"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://developers.chatwoot.com/api-reference/introduction"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://www.chatwoot.com/hc/user-guide/articles/1677693021-how-to-use-webhooks"
+			}
+		]
+	}
+}
