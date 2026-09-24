@@ -5,13 +5,14 @@ function visible(resource: string, operations: string[]): IDisplayOptions {
 }
 
 const inboxOption: INodeProperties = {
-	displayName: 'Inbox',
+	displayName: 'Inbox Name or ID',
 	name: 'inboxId',
 	type: 'options',
 	typeOptions: { loadOptionsMethod: 'getInboxes' },
 	default: '',
 	required: true,
-	description: 'Choose an inbox; the list is loaded from Chatwoot',
+	description:
+		'Choose an inbox; the list is loaded from Chatwoot. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 };
 
 const contactId: INodeProperties = {
@@ -21,7 +22,7 @@ const contactId: INodeProperties = {
 	typeOptions: { minValue: 1, numberStepSize: 1 },
 	default: 0,
 	required: true,
-	description: 'Numeric contact ID, for example {{$json.contact.id}}',
+	description: 'Numeric contact ID',
 };
 
 const conversationId: INodeProperties = {
@@ -31,37 +32,40 @@ const conversationId: INodeProperties = {
 	typeOptions: { minValue: 1, numberStepSize: 1 },
 	default: 0,
 	required: true,
-	description: 'Conversation display ID, for example {{$json.conversation.id}}',
+	description: 'Conversation display ID',
 };
 
 const labelSelector: INodeProperties = {
-	displayName: 'Labels',
+	displayName: 'Label Names or IDs',
 	name: 'labels',
 	type: 'multiOptions',
 	typeOptions: { loadOptionsMethod: 'getLabels' },
 	default: [],
 	required: true,
-	description: 'Choose labels by title; the list is loaded from Chatwoot',
+	description:
+		'Choose labels by title; the list is loaded from Chatwoot. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 };
 
 const contactAttributeSelector: INodeProperties = {
-	displayName: 'Custom Attribute',
+	displayName: 'Custom Attribute Name or ID',
 	name: 'attributeKey',
 	type: 'options',
 	typeOptions: { loadOptionsMethod: 'getContactCustomAttributes' },
 	default: '',
 	required: true,
-	description: 'Choose a contact attribute definition from Chatwoot',
+	description:
+		'Choose a contact attribute definition from Chatwoot. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 };
 
 const conversationAttributeSelector: INodeProperties = {
-	displayName: 'Custom Attribute',
+	displayName: 'Custom Attribute Name or ID',
 	name: 'attributeKey',
 	type: 'options',
 	typeOptions: { loadOptionsMethod: 'getConversationCustomAttributes' },
 	default: '',
 	required: true,
-	description: 'Choose a conversation attribute definition from Chatwoot',
+	description:
+		'Choose a conversation attribute definition from Chatwoot. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 };
 
 const attributeValue: INodeProperties = {
@@ -79,7 +83,7 @@ const returnAll: INodeProperties = {
 	name: 'returnAll',
 	type: 'boolean',
 	default: false,
-	description: 'Whether to request every available page',
+	description: 'Whether to return all results or only up to a given limit',
 };
 
 const limit: INodeProperties = {
@@ -88,7 +92,7 @@ const limit: INodeProperties = {
 	type: 'number',
 	typeOptions: { minValue: 1, maxValue: 10000, numberStepSize: 1 },
 	default: 50,
-	description: 'Maximum number of records to return',
+	description: 'Max number of results to return',
 };
 
 const contactProperties: INodeProperties[] = [
@@ -155,7 +159,8 @@ const contactProperties: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		displayOptions: visible('contact', ['create', 'createContactInbox']),
-		description: 'Optional inbox-specific source ID; Chatwoot can generate one for supported channels',
+		description:
+			'Optional inbox-specific source ID; Chatwoot can generate one for supported channels',
 	},
 	{
 		displayName: 'Avatar URL',
@@ -183,7 +188,13 @@ const contactProperties: INodeProperties[] = [
 		options: [
 			{ displayName: 'Avatar URL', name: 'avatar_url', type: 'string', default: '' },
 			{ displayName: 'Blocked', name: 'blocked', type: 'boolean', default: false },
-			{ displayName: 'Email', name: 'email', type: 'string', default: '' },
+			{
+				displayName: 'Email',
+				name: 'email',
+				type: 'string',
+				placeholder: 'name@email.com',
+				default: '',
+			},
 			{ displayName: 'External Identifier', name: 'identifier', type: 'string', default: '' },
 			{ displayName: 'Name', name: 'name', type: 'string', default: '' },
 			{ displayName: 'Phone Number', name: 'phone_number', type: 'string', default: '' },
@@ -229,12 +240,19 @@ const contactProperties: INodeProperties[] = [
 		options: [
 			{ displayName: 'Avatar URL', name: 'avatar_url', type: 'string', default: '' },
 			{ displayName: 'Blocked', name: 'blocked', type: 'boolean', default: false },
-			{ displayName: 'Email', name: 'email', type: 'string', default: '' },
+			{
+				displayName: 'Email',
+				name: 'email',
+				type: 'string',
+				placeholder: 'name@email.com',
+				default: '',
+			},
 			{ displayName: 'External Identifier', name: 'identifier', type: 'string', default: '' },
 			{ displayName: 'Name', name: 'name', type: 'string', default: '' },
 			{ displayName: 'Phone Number', name: 'phone_number', type: 'string', default: '' },
 		],
-		description: 'Fields used for both the create and update branches; the match field is added automatically',
+		description:
+			'Fields used for both the create and update branches; the match field is added automatically',
 	},
 	{
 		displayName: 'Query',
@@ -250,11 +268,11 @@ const contactProperties: INodeProperties[] = [
 		name: 'contactSort',
 		type: 'options',
 		options: [
-			{ name: 'Name', value: 'name' },
-			{ name: 'Email', value: 'email' },
-			{ name: 'Phone Number', value: 'phone_number' },
-			{ name: 'Last Activity', value: 'last_activity_at' },
 			{ name: 'Created At', value: 'created_at' },
+			{ name: 'Email', value: 'email' },
+			{ name: 'Last Activity', value: 'last_activity_at' },
+			{ name: 'Name', value: 'name' },
+			{ name: 'Phone Number', value: 'phone_number' },
 		],
 		default: 'name',
 		displayOptions: visible('contact', ['getMany', 'search']),
@@ -276,7 +294,9 @@ const contactProperties: INodeProperties[] = [
 	},
 	{
 		...limit,
-		displayOptions: { show: { resource: ['contact'], operation: ['getMany', 'search'], returnAll: [false] } },
+		displayOptions: {
+			show: { resource: ['contact'], operation: ['getMany', 'search'], returnAll: [false] },
+		},
 	},
 	{
 		...contactAttributeSelector,
@@ -287,14 +307,15 @@ const contactProperties: INodeProperties[] = [
 		displayOptions: visible('contact', ['setCustomAttribute']),
 	},
 	{
-		displayName: 'Custom Attributes',
+		displayName: 'Custom Attribute Names or IDs',
 		name: 'attributeKeys',
 		type: 'multiOptions',
 		typeOptions: { loadOptionsMethod: 'getContactCustomAttributes' },
 		default: [],
 		required: true,
 		displayOptions: visible('contact', ['removeCustomAttributes']),
-		description: 'Select one or more contact attributes to remove',
+		description:
+			'Select one or more contact attributes to remove. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 	{
 		displayName: 'Additional Attribute',
@@ -304,9 +325,9 @@ const contactProperties: INodeProperties[] = [
 			{ name: 'City', value: 'city' },
 			{ name: 'Company Name', value: 'company_name' },
 			{ name: 'Country Code', value: 'country_code' },
+			{ name: 'Custom Key (Advanced)', value: '__custom__' },
 			{ name: 'Description', value: 'description' },
 			{ name: 'Location', value: 'location' },
-			{ name: 'Custom Key (Advanced)', value: '__custom__' },
 		],
 		default: 'city',
 		displayOptions: visible('contact', ['setAdditionalAttribute']),
@@ -340,7 +361,7 @@ const contactProperties: INodeProperties[] = [
 		type: 'boolean',
 		default: true,
 		displayOptions: visible('contact', ['setBlocked']),
-		description: 'Turn on to block the contact, or off to unblock it',
+		description: 'Whether to block or unblock the contact',
 	},
 	{
 		...labelSelector,
@@ -371,7 +392,7 @@ const contactProperties: INodeProperties[] = [
 		type: 'boolean',
 		default: false,
 		displayOptions: visible('contact', ['merge']),
-		description: 'The merged contact is permanently deleted; this cannot be undone',
+		description: 'Whether to permanently delete the merged contact; this cannot be undone',
 	},
 	{
 		displayName: 'Confirm Deletion',
@@ -379,7 +400,7 @@ const contactProperties: INodeProperties[] = [
 		type: 'boolean',
 		default: false,
 		displayOptions: visible('contact', ['delete']),
-		description: 'The contact will be permanently deleted',
+		description: 'Whether to permanently delete the contact',
 	},
 ];
 
@@ -423,7 +444,8 @@ const conversationProperties: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		displayOptions: visible('conversation', ['create']),
-		description: 'Optional; Chatwoot generates it for supported channels when inbox and contact are provided',
+		description:
+			'Optional; Chatwoot generates it for supported channels when inbox and contact are provided',
 	},
 	{
 		displayName: 'Initial Status',
@@ -467,16 +489,20 @@ const conversationProperties: INodeProperties[] = [
 				default: 'all',
 			},
 			{
-				displayName: 'Inbox',
+				displayName: 'Inbox Name or ID',
 				name: 'inbox_id',
 				type: 'options',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'getInboxes' },
 				default: '',
 			},
 			{
-				displayName: 'Labels',
+				displayName: 'Label Names or IDs',
 				name: 'labels',
 				type: 'multiOptions',
+				description:
+					'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'getLabels' },
 				default: [],
 			},
@@ -509,9 +535,11 @@ const conversationProperties: INodeProperties[] = [
 				default: 'open',
 			},
 			{
-				displayName: 'Team',
+				displayName: 'Team Name or ID',
 				name: 'team_id',
 				type: 'options',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				typeOptions: { loadOptionsMethod: 'getTeams' },
 				default: '',
 			},
@@ -525,7 +553,7 @@ const conversationProperties: INodeProperties[] = [
 		default: {},
 		displayOptions: visible('conversation', ['getMany']),
 		description:
-			'Keep only conversations whose last activity falls between two dates; replaces a manual Code node filter.',
+			'Keep only conversations whose last activity falls between two dates; replaces a manual Code node filter',
 		options: [
 			{
 				displayName: 'Relative (Days Ago)',
@@ -546,7 +574,7 @@ const conversationProperties: INodeProperties[] = [
 						type: 'number',
 						typeOptions: { minValue: 0, numberStepSize: 1 },
 						default: 0,
-						description: 'Most recent activity, in days before now (0 = today).',
+						description: 'Most recent activity, in days before now (0 = today)',
 					},
 				],
 			},
@@ -578,7 +606,9 @@ const conversationProperties: INodeProperties[] = [
 	},
 	{
 		...limit,
-		displayOptions: { show: { resource: ['conversation'], operation: ['getMany'], returnAll: [false] } },
+		displayOptions: {
+			show: { resource: ['conversation'], operation: ['getMany'], returnAll: [false] },
+		},
 	},
 	{
 		displayName: 'Status',
@@ -608,28 +638,32 @@ const conversationProperties: INodeProperties[] = [
 		name: 'priority',
 		type: 'options',
 		options: [
-			{ name: 'None', value: 'none' },
+			{ name: 'High', value: 'high' },
 			{ name: 'Low', value: 'low' },
 			{ name: 'Medium', value: 'medium' },
-			{ name: 'High', value: 'high' },
+			{ name: 'None', value: 'none' },
 			{ name: 'Urgent', value: 'urgent' },
 		],
 		default: 'none',
 		displayOptions: visible('conversation', ['setPriority']),
 	},
 	{
-		displayName: 'Agent',
+		displayName: 'Agent Name or ID',
 		name: 'agentId',
 		type: 'options',
+		description:
+			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		typeOptions: { loadOptionsMethod: 'getAgents' },
 		default: '',
 		required: true,
 		displayOptions: visible('conversation', ['assignAgent']),
 	},
 	{
-		displayName: 'Team',
+		displayName: 'Team Name or ID',
 		name: 'teamId',
 		type: 'options',
+		description:
+			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		typeOptions: { loadOptionsMethod: 'getTeams' },
 		default: '',
 		required: true,
@@ -644,9 +678,11 @@ const conversationProperties: INodeProperties[] = [
 		displayOptions: visible('conversation', ['setCustomAttribute']),
 	},
 	{
-		displayName: 'Custom Attributes',
+		displayName: 'Custom Attribute Names or IDs',
 		name: 'attributeKeys',
 		type: 'multiOptions',
+		description:
+			'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		typeOptions: { loadOptionsMethod: 'getConversationCustomAttributes' },
 		default: [],
 		required: true,
@@ -671,7 +707,7 @@ const conversationProperties: INodeProperties[] = [
 		type: 'boolean',
 		default: false,
 		displayOptions: visible('conversation', ['delete']),
-		description: 'The conversation and its messages will be permanently deleted',
+		description: 'Whether to permanently delete the conversation and its messages',
 	},
 ];
 
@@ -719,12 +755,12 @@ const messageProperties: INodeProperties[] = [
 				name: 'content_type',
 				type: 'options',
 				options: [
-					{ name: 'Text', value: 'text' },
 					{ name: 'Article', value: 'article' },
 					{ name: 'Cards', value: 'cards' },
 					{ name: 'Form', value: 'form' },
 					{ name: 'Input Email', value: 'input_email' },
 					{ name: 'Input Select', value: 'input_select' },
+					{ name: 'Text', value: 'text' },
 				],
 				default: 'text',
 			},
@@ -775,11 +811,11 @@ const messageProperties: INodeProperties[] = [
 		name: 'templateCategory',
 		type: 'options',
 		options: [
-			{ name: 'Utility', value: 'UTILITY' },
+			{ name: 'Issue Resolution', value: 'ISSUE_RESOLUTION' },
 			{ name: 'Marketing', value: 'MARKETING' },
 			{ name: 'Shipping Update', value: 'SHIPPING_UPDATE' },
 			{ name: 'Ticket Update', value: 'TICKET_UPDATE' },
-			{ name: 'Issue Resolution', value: 'ISSUE_RESOLUTION' },
+			{ name: 'Utility', value: 'UTILITY' },
 		],
 		default: 'UTILITY',
 		displayOptions: visible('message', ['sendWhatsAppTemplate']),
@@ -885,9 +921,11 @@ const messageProperties: INodeProperties[] = [
 
 const customAttributeProperties: INodeProperties[] = [
 	{
-		displayName: 'Attribute Definition',
+		displayName: 'Attribute Definition Name or ID',
 		name: 'attributeDefinitionId',
 		type: 'options',
+		description:
+			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		typeOptions: { loadOptionsMethod: 'getAllCustomAttributes' },
 		default: '',
 		required: true,
@@ -1008,9 +1046,11 @@ const customAttributeProperties: INodeProperties[] = [
 
 const labelProperties: INodeProperties[] = [
 	{
-		displayName: 'Label',
+		displayName: 'Label Name or ID',
 		name: 'labelId',
 		type: 'options',
+		description:
+			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		typeOptions: { loadOptionsMethod: 'getLabelIds' },
 		default: '',
 		required: true,
@@ -1070,9 +1110,11 @@ const labelProperties: INodeProperties[] = [
 
 const agentProperties: INodeProperties[] = [
 	{
-		displayName: 'Agent',
+		displayName: 'Agent Name or ID',
 		name: 'agentId',
 		type: 'options',
+		description:
+			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		typeOptions: { loadOptionsMethod: 'getAgents' },
 		default: '',
 		required: true,
@@ -1168,9 +1210,11 @@ const agentProperties: INodeProperties[] = [
 
 const teamProperties: INodeProperties[] = [
 	{
-		displayName: 'Team',
+		displayName: 'Team Name or ID',
 		name: 'teamId',
 		type: 'options',
+		description:
+			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		typeOptions: { loadOptionsMethod: 'getTeams' },
 		default: '',
 		required: true,
@@ -1214,15 +1258,22 @@ const teamProperties: INodeProperties[] = [
 		default: {},
 		displayOptions: visible('team', ['update']),
 		options: [
-			{ displayName: 'Allow Auto Assign', name: 'allow_auto_assign', type: 'boolean', default: true },
+			{
+				displayName: 'Allow Auto Assign',
+				name: 'allow_auto_assign',
+				type: 'boolean',
+				default: true,
+			},
 			{ displayName: 'Description', name: 'description', type: 'string', default: '' },
 			{ displayName: 'Name', name: 'name', type: 'string', default: '' },
 		],
 	},
 	{
-		displayName: 'Agents',
+		displayName: 'Agent Names or IDs',
 		name: 'agentIds',
 		type: 'multiOptions',
+		description:
+			'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		typeOptions: { loadOptionsMethod: 'getAgents' },
 		default: [],
 		required: true,
@@ -1310,7 +1361,7 @@ export const ACTION_PROPERTIES: INodeProperties[] = [
 				name: 'includeApiDetails',
 				type: 'boolean',
 				default: false,
-				description: 'Add the resolved HTTP method and endpoint to every output item',
+				description: 'Whether to add the resolved HTTP method and endpoint to every output item',
 			},
 			{
 				displayName: 'Response Mode',
@@ -1321,7 +1372,8 @@ export const ACTION_PROPERTIES: INodeProperties[] = [
 					{ name: 'Raw Chatwoot Response', value: 'raw' },
 				],
 				default: 'simplified',
-				description: 'Simplified unwraps common payload envelopes; raw preserves the exact API body',
+				description:
+					'Simplified unwraps common payload envelopes; raw preserves the exact API body',
 			},
 		],
 	},

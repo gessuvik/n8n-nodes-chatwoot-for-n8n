@@ -90,15 +90,15 @@ compuestas los agrupa sin fingir una única respuesta de Chatwoot.
 En Chatwoot 4.16.2 y 4.17.0, `Webhook::ALLOWED_WEBHOOK_EVENTS` incluye los diez eventos solicitados. El
 listener construye los payloads de esta forma:
 
-| Eventos | Forma relevante del payload |
-| --- | --- |
-| `conversation_created` | datos de la conversación y `event` |
-| `conversation_status_changed`, `conversation_updated` | conversación, `event`, `changed_attributes` |
-| `message_created`, `message_updated` | datos de mensaje y `event`; solo si el mensaje es `webhook_sendable?` |
-| `webwidget_triggered` | datos de `contact_inbox`, `current_conversation`, `event_info`, `event` |
-| `contact_created` | datos de contacto y `event` |
-| `contact_updated` | contacto, `event`, `changed_attributes`; no se emite si no hay cambios |
-| `conversation_typing_on`, `conversation_typing_off` | `user`, `conversation`, `is_private`, `event` |
+| Eventos                                               | Forma relevante del payload                                             |
+| ----------------------------------------------------- | ----------------------------------------------------------------------- |
+| `conversation_created`                                | datos de la conversación y `event`                                      |
+| `conversation_status_changed`, `conversation_updated` | conversación, `event`, `changed_attributes`                             |
+| `message_created`, `message_updated`                  | datos de mensaje y `event`; solo si el mensaje es `webhook_sendable?`   |
+| `webwidget_triggered`                                 | datos de `contact_inbox`, `current_conversation`, `event_info`, `event` |
+| `contact_created`                                     | datos de contacto y `event`                                             |
+| `contact_updated`                                     | contacto, `event`, `changed_attributes`; no se emite si no hay cambios  |
+| `conversation_typing_on`, `conversation_typing_off`   | `user`, `conversation`, `is_private`, `event`                           |
 
 Los eventos de conversación, mensaje, widget y escritura pueden enviarse al webhook de cuenta y,
 en un API Inbox, también al webhook propio del canal. Este paquete crea únicamente webhooks de

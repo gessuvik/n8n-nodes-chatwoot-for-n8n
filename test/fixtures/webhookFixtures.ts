@@ -84,17 +84,13 @@ export const webhookFixtures: Record<string, IDataObject> = {
 	},
 	conversation_status_changed: {
 		...conversation,
-		changed_attributes: [
-			{ status: { current_value: 'resolved', previous_value: 'open' } },
-		],
+		changed_attributes: [{ status: { current_value: 'resolved', previous_value: 'open' } }],
 		event: 'conversation_status_changed',
 		status: 'resolved',
 	},
 	conversation_updated: {
 		...conversation,
-		changed_attributes: [
-			{ priority: { current_value: 'high', previous_value: null } },
-		],
+		changed_attributes: [{ priority: { current_value: 'high', previous_value: null } }],
 		event: 'conversation_updated',
 		priority: 'high',
 	},
@@ -135,9 +131,7 @@ export const webhookFixtures: Record<string, IDataObject> = {
 		account,
 		avatar: '',
 		blocked: false,
-		changed_attributes: [
-			{ name: { current_value: 'Ana Updated', previous_value: 'Ana Example' } },
-		],
+		changed_attributes: [{ name: { current_value: 'Ana Updated', previous_value: 'Ana Example' } }],
 		event: 'contact_updated',
 		name: 'Ana Updated',
 	},

@@ -78,10 +78,7 @@ describe('managed Chatwoot webhook lifecycle', () => {
 		expect(await checkManagedWebhook(api, config('https://n8n.example/webhook/a', state))).toBe(
 			false,
 		);
-		const result = await ensureManagedWebhook(
-			api,
-			config('https://n8n.example/webhook/a', state),
-		);
+		const result = await ensureManagedWebhook(api, config('https://n8n.example/webhook/a', state));
 
 		expect(result.action).toBe('created');
 		expect(api.created).toBe(1);
@@ -163,9 +160,9 @@ describe('managed Chatwoot webhook lifecycle', () => {
 			throw new Error('ETIMEDOUT');
 		};
 
-		await expect(ensureManagedWebhook(api, config('https://n8n.example/webhook/a'))).rejects.toThrow(
-			'ETIMEDOUT',
-		);
+		await expect(
+			ensureManagedWebhook(api, config('https://n8n.example/webhook/a')),
+		).rejects.toThrow('ETIMEDOUT');
 		expect(api.created).toBe(0);
 	});
 });

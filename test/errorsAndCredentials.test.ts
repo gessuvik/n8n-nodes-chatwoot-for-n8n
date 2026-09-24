@@ -19,9 +19,7 @@ describe('Chatwoot credentials and API errors', () => {
 		expect(normalizeBaseUrl('https://support.example.com/chatwoot///')).toBe(
 			'https://support.example.com/chatwoot',
 		);
-		expect(normalizeBaseUrl('http://chatwoot.internal:3000')).toBe(
-			'http://chatwoot.internal:3000',
-		);
+		expect(normalizeBaseUrl('http://chatwoot.internal:3000')).toBe('http://chatwoot.internal:3000');
 	});
 
 	it.each([

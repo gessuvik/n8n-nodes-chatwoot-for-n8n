@@ -373,10 +373,7 @@ describe('Chatwoot action execution', () => {
 
 			await executeChatwootOperation(context, 0);
 
-			const body = requestOptions(httpRequestWithAuthentication, 0).body as Record<
-				string,
-				unknown
-			>;
+			const body = requestOptions(httpRequestWithAuthentication, 0).body as Record<string, unknown>;
 			expect(body).toHaveProperty(testCase.wrapper);
 			expect(body[testCase.wrapper]).toMatchObject(testCase.expected);
 		}

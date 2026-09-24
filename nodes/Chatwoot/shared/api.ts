@@ -106,31 +106,22 @@ export function createChatwootWebhookApi(context: IHookFunctions): ChatwootWebho
 		},
 		async create(input: ChatwootWebhookInput) {
 			return unwrapWebhook(
-				await chatwootApiRequest<unknown>(
-					context,
-					'POST',
-					await getEndpoint(),
-					{ body: input as unknown as IDataObject },
-				),
+				await chatwootApiRequest<unknown>(context, 'POST', await getEndpoint(), {
+					body: input as unknown as IDataObject,
+				}),
 			);
 		},
 		async update(id: number, input: ChatwootWebhookInput) {
 			return unwrapWebhook(
-				await chatwootApiRequest<unknown>(
-					context,
-					'PATCH',
-					`${await getEndpoint()}/${id}`,
-					{ body: input as unknown as IDataObject },
-				),
+				await chatwootApiRequest<unknown>(context, 'PATCH', `${await getEndpoint()}/${id}`, {
+					body: input as unknown as IDataObject,
+				}),
 			);
 		},
 		async delete(id: number) {
-			await chatwootApiRequest<unknown>(
-				context,
-				'DELETE',
-				`${await getEndpoint()}/${id}`,
-				{ ignoreNotFound: true },
-			);
+			await chatwootApiRequest<unknown>(context, 'DELETE', `${await getEndpoint()}/${id}`, {
+				ignoreNotFound: true,
+			});
 		},
 	};
 }

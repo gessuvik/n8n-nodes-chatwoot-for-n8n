@@ -62,9 +62,7 @@ describe('Chatwoot custom attribute conversion', () => {
 	});
 
 	it('converts a date to the ISO value used by the Chatwoot UI', () => {
-		expect(coerceCustomAttributeValue('2026-08-19', 'date')).toBe(
-			'2026-08-19T00:00:00.000Z',
-		);
+		expect(coerceCustomAttributeValue('2026-08-19', 'date')).toBe('2026-08-19T00:00:00.000Z');
 	});
 
 	it('keeps text, link, and list values as strings', () => {
@@ -135,10 +133,7 @@ describe('Chatwoot conversation activity date range', () => {
 
 	it('resolves an absolute range and tolerates empty bounds', () => {
 		expect(
-			resolveActivityRange(
-				{ absolute: { from: '2026-01-01T00:00:00.000Z', to: '' } },
-				NOW,
-			),
+			resolveActivityRange({ absolute: { from: '2026-01-01T00:00:00.000Z', to: '' } }, NOW),
 		).toEqual({ from: NOW });
 		expect(() =>
 			resolveActivityRange(

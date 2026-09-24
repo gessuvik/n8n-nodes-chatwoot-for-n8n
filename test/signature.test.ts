@@ -9,9 +9,7 @@ const timestamp = '1776664800';
 const rawBody = '{"event":"message_created","id":99}';
 
 function signatureFor(body: string): string {
-	return `sha256=${createHmac('sha256', secret)
-		.update(`${timestamp}.${body}`)
-		.digest('hex')}`;
+	return `sha256=${createHmac('sha256', secret).update(`${timestamp}.${body}`).digest('hex')}`;
 }
 
 describe('verifyChatwootSignature', () => {

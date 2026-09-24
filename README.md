@@ -56,15 +56,15 @@ salida todas las llamadas resueltas, sin Base URL ni token.
 
 ## Caja de herramientas
 
-| Recurso          | Cantidad | Incluye                                                                                   |
-| ---------------- | -------- | ----------------------------------------------------------------------------------------- |
+| Recurso          | Cantidad | Incluye                                                                                    |
+| ---------------- | -------- | ------------------------------------------------------------------------------------------ |
 | Contact (Lead)   | 20       | crear, buscar exacto, upsert, actualizar, bloquear, atributos, labels, inbox, merge        |
 | Conversation     | 22       | crear, listar, estado, prioridad, asignación, atributos, labels, mute, leído y eliminación |
 | Message          | 7        | listar, enviar, nota privada, incoming, plantilla WhatsApp, estado y eliminación           |
 | Custom Attribute | 5        | listar, obtener, crear, actualizar y eliminar definiciones                                 |
 | Label            | 5        | listar, obtener, crear, actualizar y eliminar                                              |
 | Agent            | 4        | listar, invitar, actualizar y remover                                                      |
-| Team             | 9        | CRUD y administración de miembros                                                         |
+| Team             | 9        | CRUD y administración de miembros                                                          |
 | Inbox            | 3        | listar, obtener y actualizar ajustes comunes                                               |
 
 El inventario exacto con método, ruta y comportamiento está en

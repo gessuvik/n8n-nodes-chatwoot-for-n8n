@@ -225,7 +225,14 @@ export function filterConversationsByActivity(
 }
 
 export function uniqueStrings(values: unknown[]): string[] {
-	return [...new Set(values.map(String).map((value) => value.trim()).filter(Boolean))];
+	return [
+		...new Set(
+			values
+				.map(String)
+				.map((value) => value.trim())
+				.filter(Boolean),
+		),
+	];
 }
 
 export function valueToDataObject(value: unknown): IDataObject {
