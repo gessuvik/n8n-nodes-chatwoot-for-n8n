@@ -9,11 +9,7 @@ import type {
 import { NodeOperationError } from 'n8n-workflow';
 
 import { describeChatwootError } from './errors';
-import type {
-	ChatwootWebhook,
-	ChatwootWebhookApi,
-	ChatwootWebhookInput,
-} from './types';
+import type { ChatwootWebhookApi, ChatwootWebhookInput } from './types';
 import { normalizeBaseUrl } from './url';
 import { unwrapWebhook, unwrapWebhookList } from './webhookResponse';
 
