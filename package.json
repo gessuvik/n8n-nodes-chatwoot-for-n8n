@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-chatwoot-for-n8n",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "Complete Chatwoot community nodes for n8n: triggers plus intuitive contact, conversation, message, attribute, label, agent, team, and inbox actions",
 	"homepage": "https://www.npmjs.com/package/n8n-nodes-chatwoot-for-n8n",
 	"repository": {

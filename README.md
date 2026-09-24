@@ -70,6 +70,20 @@ salida todas las llamadas resueltas, sin Base URL ni token.
 El inventario exacto con método, ruta y comportamiento está en
 [Acciones](docs/ACTIONS.md).
 
+## Filtrar conversaciones por rango de actividad
+
+La operación **Conversation → Get Many** incluye un filtro **Activity Date Range** que
+selecciona conversaciones según su `last_activity_at`, sin nodos Code:
+
+- **Relative (Days Ago)**: define un rango con "hace N días" (por ejemplo, 30 a 0 para
+  "actividad en los últimos 30 días").
+- **Absolute Dates**: define una fecha de inicio y fin exactas (cualquiera puede quedar
+  vacía para no limitar ese extremo).
+
+Combinado con **Message → Send WhatsApp Template**, el flujo "enviar plantilla a contactos
+con conversaciones de fecha A a fecha B" queda en dos nodos y sin código. Para probar sin
+riesgo, desactiva **Return All** y fija un **Limit** pequeño.
+
 ## Atributos pensados para leads
 
 Los dropdowns de atributos se cargan desde las definiciones reales de tu cuenta. El nodo muestra

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 - 2026-09-24
+
+- Add an activity date range filter to Conversation "Get Many" (`last_activity_at`).
+- Support relative (days ago) and absolute (datetime) ranges without a manual Code node.
+- Reject a null `payload.webhook` in webhook unwrapping instead of returning the wrapper object.
+
 ## 0.2.0 - 2026-08-19
 
 - Add the Chatwoot action node with 75 operations across eight resources.

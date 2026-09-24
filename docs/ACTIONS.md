@@ -42,7 +42,7 @@ API**. Ninguna acción pide esos valores dentro del workflow.
 | ---------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------- |
 | Create                       | `POST /conversations`                                                | Inbox y contacto por dropdown/ID; source ID opcional           |
 | Get                          | `GET /conversations/{conversation_id}`                               | Usa el display ID que muestra Chatwoot                         |
-| Get Many                     | `GET /conversations`                                                 | Filtros de estado, asignación, inbox, equipo, labels y mensaje  |
+| Get Many                     | `GET /conversations`                                                 | Filtros de estado, asignación, inbox, equipo, labels, mensaje y rango de actividad |
 | Set Status                   | `POST /conversations/{id}/toggle_status`                              | Open, pending, resolved o snoozed                              |
 | Set Priority                 | `POST /conversations/{id}/toggle_priority`                            | None, low, medium, high o urgent                               |
 | Assign Agent                 | `POST /conversations/{id}/assignments`                               | Agente por dropdown                                            |
