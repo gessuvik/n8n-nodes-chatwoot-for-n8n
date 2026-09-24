@@ -9,6 +9,7 @@ import {
 	coerceCustomAttributeValue,
 	extractArray,
 	extractStringArray,
+	filterConversationsByActivity,
 	findExactContact,
 	isDataObject,
 	parseCommaSeparated,
@@ -516,6 +517,7 @@ export async function executeChatwootOperation(
 				? 10000
 				: requirePositiveInteger(context.getNodeParameter('limit', itemIndex, 50), 'Limit');
 			const query = context.getNodeParameter('conversationFilters', itemIndex, {}) as IDataObject;
+			const activityRange = context.getNodeParameter('activityRange', itemIndex, {}) as IDataObject;
 			const result = await paginateByPage(
 				request,
 				`${basePath}/conversations`,
@@ -524,7 +526,7 @@ export async function executeChatwootOperation(
 				requestedLimit,
 			);
 			raw = result.raw;
-			data = result.items;
+			data = filterConversationsByActivity(result.items, activityRange);
 		} else {
 			const id = requirePositiveInteger(
 				context.getNodeParameter('conversationId', itemIndex),

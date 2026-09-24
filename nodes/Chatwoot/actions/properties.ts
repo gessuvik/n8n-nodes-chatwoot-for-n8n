@@ -518,6 +518,61 @@ const conversationProperties: INodeProperties[] = [
 		],
 	},
 	{
+		displayName: 'Activity Date Range',
+		name: 'activityRange',
+		type: 'fixedCollection',
+		typeOptions: { multipleValues: false },
+		default: {},
+		displayOptions: visible('conversation', ['getMany']),
+		description:
+			'Keep only conversations whose last activity falls between two dates; replaces a manual Code node filter.',
+		options: [
+			{
+				displayName: 'Relative (Days Ago)',
+				name: 'relative',
+				values: [
+					{
+						displayName: 'From (Days Ago)',
+						name: 'fromDays',
+						type: 'number',
+						typeOptions: { minValue: 0, numberStepSize: 1 },
+						default: 30,
+						description:
+							'Oldest activity, in days before now. Must be greater than or equal to To.',
+					},
+					{
+						displayName: 'To (Days Ago)',
+						name: 'toDays',
+						type: 'number',
+						typeOptions: { minValue: 0, numberStepSize: 1 },
+						default: 0,
+						description: 'Most recent activity, in days before now (0 = today).',
+					},
+				],
+			},
+			{
+				displayName: 'Absolute Dates',
+				name: 'absolute',
+				values: [
+					{
+						displayName: 'From',
+						name: 'from',
+						type: 'dateTime',
+						default: '',
+						description: 'Oldest activity (inclusive). Leave empty for no lower bound.',
+					},
+					{
+						displayName: 'To',
+						name: 'to',
+						type: 'dateTime',
+						default: '',
+						description: 'Most recent activity (inclusive). Leave empty for no upper bound.',
+					},
+				],
+			},
+		],
+	},
+	{
 		...returnAll,
 		displayOptions: visible('conversation', ['getMany']),
 	},

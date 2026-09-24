@@ -416,6 +416,35 @@ describe('Chatwoot action execution', () => {
 		});
 	});
 
+	it('filters listed conversations by their activity date range', async () => {
+		const DAY = 24 * 60 * 60 * 1000;
+		const seconds = (ms: number) => Math.floor(ms / 1000);
+		const now = Date.now();
+		const conversations = [
+			{ id: 1, last_activity_at: seconds(now - 10 * DAY) },
+			{ id: 2, last_activity_at: seconds(now - 60 * DAY) },
+			{ id: 3, last_activity_at: seconds(now) },
+		];
+		const { context } = createContext(
+			{
+				...commonParameters,
+				resource: 'conversation',
+				operation: 'getMany',
+				returnAll: false,
+				limit: 100,
+				activityRange: { relative: { fromDays: 30, toDays: 0 } },
+			},
+			() => ({ data: { payload: conversations }, meta: { has_more: false } }),
+		);
+
+		const result = await executeChatwootOperation(context, 0);
+
+		expect(result.data).toEqual([
+			{ id: 1, last_activity_at: seconds(now - 10 * DAY) },
+			{ id: 3, last_activity_at: seconds(now) },
+		]);
+	});
+
 	it('dispatches every operation in the public catalog to an executor', async () => {
 		for (const [resource, operations] of Object.entries(OPERATION_CATALOG)) {
 			for (const operation of operations) {
