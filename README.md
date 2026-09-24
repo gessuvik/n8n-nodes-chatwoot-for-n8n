@@ -56,19 +56,33 @@ salida todas las llamadas resueltas, sin Base URL ni token.
 
 ## Caja de herramientas
 
-| Recurso          | Cantidad | Incluye                                                                                   |
-| ---------------- | -------- | ----------------------------------------------------------------------------------------- |
+| Recurso          | Cantidad | Incluye                                                                                    |
+| ---------------- | -------- | ------------------------------------------------------------------------------------------ |
 | Contact (Lead)   | 20       | crear, buscar exacto, upsert, actualizar, bloquear, atributos, labels, inbox, merge        |
 | Conversation     | 22       | crear, listar, estado, prioridad, asignación, atributos, labels, mute, leído y eliminación |
 | Message          | 7        | listar, enviar, nota privada, incoming, plantilla WhatsApp, estado y eliminación           |
 | Custom Attribute | 5        | listar, obtener, crear, actualizar y eliminar definiciones                                 |
 | Label            | 5        | listar, obtener, crear, actualizar y eliminar                                              |
 | Agent            | 4        | listar, invitar, actualizar y remover                                                      |
-| Team             | 9        | CRUD y administración de miembros                                                         |
+| Team             | 9        | CRUD y administración de miembros                                                          |
 | Inbox            | 3        | listar, obtener y actualizar ajustes comunes                                               |
 
 El inventario exacto con método, ruta y comportamiento está en
 [Acciones](docs/ACTIONS.md).
+
+## Filtrar conversaciones por rango de actividad
+
+La operación **Conversation → Get Many** incluye un filtro **Activity Date Range** que
+selecciona conversaciones según su `last_activity_at`, sin nodos Code:
+
+- **Relative (Days Ago)**: define un rango con "hace N días" (por ejemplo, 30 a 0 para
+  "actividad en los últimos 30 días").
+- **Absolute Dates**: define una fecha de inicio y fin exactas (cualquiera puede quedar
+  vacía para no limitar ese extremo).
+
+Combinado con **Message → Send WhatsApp Template**, el flujo "enviar plantilla a contactos
+con conversaciones de fecha A a fecha B" queda en dos nodos y sin código. Para probar sin
+riesgo, desactiva **Return All** y fija un **Limit** pequeño.
 
 ## Atributos pensados para leads
 

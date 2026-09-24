@@ -4,10 +4,12 @@ import {
 	coerceCustomAttributeValue,
 	extractArray,
 	extractStringArray,
+	filterConversationsByActivity,
 	findExactContact,
 	parseCommaSeparated,
 	parseJsonObject,
 	requirePositiveInteger,
+	resolveActivityRange,
 	simplifyChatwootResponse,
 	toUnixSeconds,
 	uniqueStrings,
@@ -60,9 +62,7 @@ describe('Chatwoot custom attribute conversion', () => {
 	});
 
 	it('converts a date to the ISO value used by the Chatwoot UI', () => {
-		expect(coerceCustomAttributeValue('2026-08-19', 'date')).toBe(
-			'2026-08-19T00:00:00.000Z',
-		);
+		expect(coerceCustomAttributeValue('2026-08-19', 'date')).toBe('2026-08-19T00:00:00.000Z');
 	});
 
 	it('keeps text, link, and list values as strings', () => {
@@ -110,5 +110,83 @@ describe('Chatwoot action input helpers', () => {
 
 	it('deduplicates and trims labels without changing their case', () => {
 		expect(uniqueStrings([' lead ', 'VIP', 'lead', ''])).toEqual(['lead', 'VIP']);
+	});
+});
+
+describe('Chatwoot conversation activity date range', () => {
+	const NOW = Date.UTC(2026, 0, 1); // 2026-01-01T00:00:00Z
+	const DAY = 24 * 60 * 60 * 1000;
+	const at = (daysAgo: number) => (NOW - daysAgo * DAY) / 1000; // Unix seconds, like Chatwoot
+
+	it('resolves a relative range into an inclusive millisecond window', () => {
+		expect(resolveActivityRange({ relative: { fromDays: 30, toDays: 0 } }, NOW)).toEqual({
+			from: NOW - 30 * DAY,
+			to: NOW,
+		});
+	});
+
+	it('rejects a relative range where From is before To', () => {
+		expect(() => resolveActivityRange({ relative: { fromDays: 5, toDays: 10 } }, NOW)).toThrow(
+			'mayor o igual',
+		);
+	});
+
+	it('resolves an absolute range and tolerates empty bounds', () => {
+		expect(
+			resolveActivityRange({ absolute: { from: '2026-01-01T00:00:00.000Z', to: '' } }, NOW),
+		).toEqual({ from: NOW });
+		expect(() =>
+			resolveActivityRange(
+				{ absolute: { from: '2026-02-01T00:00:00.000Z', to: '2026-01-01T00:00:00.000Z' } },
+				NOW,
+			),
+		).toThrow('anterior o igual');
+	});
+
+	it('returns every item when no range is configured', () => {
+		const items = [{ id: 1 }, { id: 2 }];
+		expect(filterConversationsByActivity(items, {}, NOW)).toEqual(items);
+	});
+
+	it('keeps conversations whose last_activity_at falls inside the relative window', () => {
+		const items = [
+			{ id: 1, last_activity_at: at(15) },
+			{ id: 2, last_activity_at: at(45) },
+			{ id: 3, last_activity_at: at(0) },
+			{ id: 4, last_activity_at: at(-1) },
+		];
+		const result = filterConversationsByActivity(
+			items,
+			{ relative: { fromDays: 30, toDays: 0 } },
+			NOW,
+		);
+		expect(result.map((item) => item.id)).toEqual([1, 3]);
+	});
+
+	it('understands ISO strings and millisecond timestamps for last_activity_at', () => {
+		const items = [
+			{ id: 1, last_activity_at: new Date(NOW - 10 * DAY).toISOString() },
+			{ id: 2, last_activity_at: NOW - 40 * DAY }, // already in milliseconds
+		];
+		const result = filterConversationsByActivity(
+			items,
+			{ relative: { fromDays: 30, toDays: 0 } },
+			NOW,
+		);
+		expect(result.map((item) => item.id)).toEqual([1]);
+	});
+
+	it('drops conversations without a parseable activity timestamp', () => {
+		const items = [
+			{ id: 1, last_activity_at: at(10) },
+			{ id: 2, last_activity_at: null },
+			{ id: 3 },
+		];
+		const result = filterConversationsByActivity(
+			items,
+			{ relative: { fromDays: 30, toDays: 0 } },
+			NOW,
+		);
+		expect(result.map((item) => item.id)).toEqual([1]);
 	});
 });

@@ -150,8 +150,89 @@ export function toUnixSeconds(value: unknown): number | undefined {
 	return Math.floor(timestamp / 1000);
 }
 
+export interface ActivityRangeWindow {
+	from?: number;
+	to?: number;
+}
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function toEpochMilliseconds(value: unknown): number | undefined {
+	if (value === undefined || value === null || value === '') return undefined;
+	if (typeof value === 'number') {
+		if (!Number.isFinite(value)) return undefined;
+		// Chatwoot serializes last_activity_at as Unix seconds; treat large numbers as milliseconds.
+		return value < 1_000_000_000_000 ? value * 1000 : value;
+	}
+	const text = String(value).trim();
+	if (text === '') return undefined;
+	if (/^\d{1,16}$/.test(text)) {
+		const numeric = Number(text);
+		if (!Number.isFinite(numeric)) return undefined;
+		return numeric < 1_000_000_000_000 ? numeric * 1000 : numeric;
+	}
+	const parsed = Date.parse(text);
+	return Number.isNaN(parsed) ? undefined : parsed;
+}
+
+export function resolveActivityRange(range: IDataObject, now: number): ActivityRangeWindow {
+	const relative = isDataObject(range.relative) ? range.relative : {};
+	const absolute = isDataObject(range.absolute) ? range.absolute : {};
+
+	if (Object.keys(relative).length > 0) {
+		const fromDays = Number(relative.fromDays);
+		const toDays = Number(relative.toDays);
+		if (!Number.isFinite(fromDays) || !Number.isFinite(toDays) || fromDays < 0 || toDays < 0) {
+			throw new Error('From y To (days ago) deben ser números mayores o iguales a cero.');
+		}
+		if (fromDays < toDays) {
+			throw new Error(
+				`Rango inválido: From (${fromDays} días) debe ser mayor o igual a To (${toDays} días).`,
+			);
+		}
+		return {
+			from: now - fromDays * MS_PER_DAY,
+			to: now - toDays * MS_PER_DAY,
+		};
+	}
+
+	if (Object.keys(absolute).length > 0) {
+		const from = toEpochMilliseconds(absolute.from);
+		const to = toEpochMilliseconds(absolute.to);
+		if (from !== undefined && to !== undefined && from > to) {
+			throw new Error('La fecha From debe ser anterior o igual a To.');
+		}
+		return { from, to };
+	}
+
+	return {};
+}
+
+export function filterConversationsByActivity(
+	items: IDataObject[],
+	range: IDataObject,
+	now: number = Date.now(),
+): IDataObject[] {
+	const { from, to } = resolveActivityRange(range, now);
+	if (from === undefined && to === undefined) return items;
+	return items.filter((item) => {
+		const activity = toEpochMilliseconds(item.last_activity_at);
+		if (activity === undefined) return false;
+		if (from !== undefined && activity < from) return false;
+		if (to !== undefined && activity > to) return false;
+		return true;
+	});
+}
+
 export function uniqueStrings(values: unknown[]): string[] {
-	return [...new Set(values.map(String).map((value) => value.trim()).filter(Boolean))];
+	return [
+		...new Set(
+			values
+				.map(String)
+				.map((value) => value.trim())
+				.filter(Boolean),
+		),
+	];
 }
 
 export function valueToDataObject(value: unknown): IDataObject {

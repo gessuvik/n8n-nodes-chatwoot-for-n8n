@@ -47,8 +47,7 @@ export class ChatwootApi implements ICredentialType {
 			name: 'verifyWebhookSignatures',
 			type: 'boolean',
 			default: true,
-			description:
-				'Whether to verify signed deliveries when Chatwoot returns a webhook secret',
+			description: 'Whether to verify signed deliveries when Chatwoot returns a webhook secret',
 		},
 		{
 			displayName: 'Ignore SSL Issues (Not Recommended)',

@@ -2,21 +2,21 @@
 
 Ejecución local del 19 de agosto de 2026 para la versión `0.2.0`:
 
-| Comprobación                                 | Resultado                                                  |
-| -------------------------------------------- | ---------------------------------------------------------- |
-| Instalación de dependencias con pnpm 11.19.0 | PASS                                                       |
-| Formato con Prettier 3.8.3                   | PASS                                                       |
-| TypeScript del paquete y los tests           | PASS                                                       |
-| Lint oficial de n8n (`@n8n/node-cli` 0.44.3) | PASS                                                       |
-| Tests con Vitest 4.1.11                      | PASS: 98 de 98 en 10 archivos                              |
-| Catálogo publicado                           | PASS: 75 acciones en 8 recursos                            |
-| Build de producción                          | PASS                                                       |
-| Carga de exports JavaScript compilados       | PASS: `Chatwoot` y `Chatwoot Trigger`                      |
-| Creación del `.tgz`                          | PASS: 63 archivos, aproximadamente 125 kB                  |
-| Instalación aislada del `.tgz` con npm       | PASS: versión y ambos nodos cargados desde `node_modules`  |
-| Simulación completa de `npm publish`          | PASS: lifecycle `prepublishOnly`, tag `latest`, acceso public |
-| Trigger contra Chatwoot/n8n reales           | PASS: confirmado por el usuario                            |
-| Acciones contra Chatwoot/n8n reales          | PENDIENTE: ejecutar el smoke test reversible               |
+| Comprobación                                 | Resultado                                                     |
+| -------------------------------------------- | ------------------------------------------------------------- |
+| Instalación de dependencias con pnpm 11.19.0 | PASS                                                          |
+| Formato con Prettier 3.8.3                   | PASS                                                          |
+| TypeScript del paquete y los tests           | PASS                                                          |
+| Lint oficial de n8n (`@n8n/node-cli` 0.44.3) | PASS                                                          |
+| Tests con Vitest 4.1.11                      | PASS: 98 de 98 en 10 archivos                                 |
+| Catálogo publicado                           | PASS: 75 acciones en 8 recursos                               |
+| Build de producción                          | PASS                                                          |
+| Carga de exports JavaScript compilados       | PASS: `Chatwoot` y `Chatwoot Trigger`                         |
+| Creación del `.tgz`                          | PASS: 63 archivos, aproximadamente 125 kB                     |
+| Instalación aislada del `.tgz` con npm       | PASS: versión y ambos nodos cargados desde `node_modules`     |
+| Simulación completa de `npm publish`         | PASS: lifecycle `prepublishOnly`, tag `latest`, acceso public |
+| Trigger contra Chatwoot/n8n reales           | PASS: confirmado por el usuario                               |
+| Acciones contra Chatwoot/n8n reales          | PENDIENTE: ejecutar el smoke test reversible                  |
 
 Artefacto generado:
 

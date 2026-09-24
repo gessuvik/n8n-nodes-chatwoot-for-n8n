@@ -88,8 +88,7 @@ function assertReachableWebhookUrl(context: IHookFunctions, url: string): void {
 			context.getNode(),
 			'Chatwoot no puede entregar eventos a una URL local de n8n.',
 			{
-				description:
-					'Configura una WEBHOOK_URL pública con HTTPS y vuelve a activar el workflow.',
+				description: 'Configura una WEBHOOK_URL pública con HTTPS y vuelve a activar el workflow.',
 			},
 		);
 	}
@@ -105,9 +104,13 @@ function lifecycleError(context: IHookFunctions, error: unknown): NodeOperationE
 		});
 	}
 	if (error instanceof InvalidWebhookResponseError) {
-		return new NodeOperationError(context.getNode(), 'Chatwoot devolvió una respuesta inesperada.', {
-			description: error.message,
-		});
+		return new NodeOperationError(
+			context.getNode(),
+			'Chatwoot devolvió una respuesta inesperada.',
+			{
+				description: error.message,
+			},
+		);
 	}
 
 	return new NodeOperationError(context.getNode(), 'Falló el lifecycle del webhook de Chatwoot.', {

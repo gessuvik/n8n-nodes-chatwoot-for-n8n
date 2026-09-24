@@ -15,14 +15,8 @@ function sortOptions(options: INodePropertyOptions[]): INodePropertyOptions[] {
 	return options.sort((left, right) => left.name.localeCompare(right.name));
 }
 
-export async function getInboxes(
-	this: ILoadOptionsFunctions,
-): Promise<INodePropertyOptions[]> {
-	const response = await chatwootApiRequest(
-		this,
-		'GET',
-		await getAccountEndpoint(this, 'inboxes'),
-	);
+export async function getInboxes(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+	const response = await chatwootApiRequest(this, 'GET', await getAccountEndpoint(this, 'inboxes'));
 	return sortOptions(
 		extractArray(response).map((inbox) => ({
 			name: `${String(inbox.name ?? `Inbox ${String(inbox.id)}`)} (${String(inbox.channel_type ?? inbox.inbox_type ?? 'inbox')})`,
@@ -32,11 +26,7 @@ export async function getInboxes(
 }
 
 export async function getLabels(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-	const response = await chatwootApiRequest(
-		this,
-		'GET',
-		await getAccountEndpoint(this, 'labels'),
-	);
+	const response = await chatwootApiRequest(this, 'GET', await getAccountEndpoint(this, 'labels'));
 	return sortOptions(
 		extractArray(response).map((label) => ({
 			name: String(label.title ?? `Label ${String(label.id)}`),
@@ -47,11 +37,7 @@ export async function getLabels(this: ILoadOptionsFunctions): Promise<INodePrope
 }
 
 export async function getLabelIds(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-	const response = await chatwootApiRequest(
-		this,
-		'GET',
-		await getAccountEndpoint(this, 'labels'),
-	);
+	const response = await chatwootApiRequest(this, 'GET', await getAccountEndpoint(this, 'labels'));
 	return sortOptions(
 		extractArray(response).map((label) => ({
 			name: String(label.title ?? `Label ${String(label.id)}`),
@@ -62,11 +48,7 @@ export async function getLabelIds(this: ILoadOptionsFunctions): Promise<INodePro
 }
 
 export async function getAgents(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-	const response = await chatwootApiRequest(
-		this,
-		'GET',
-		await getAccountEndpoint(this, 'agents'),
-	);
+	const response = await chatwootApiRequest(this, 'GET', await getAccountEndpoint(this, 'agents'));
 	return sortOptions(
 		extractArray(response).map((agent) => ({
 			name: `${String(agent.name ?? `Agent ${String(agent.id)}`)}${agent.email ? ` — ${String(agent.email)}` : ''}`,
@@ -76,11 +58,7 @@ export async function getAgents(this: ILoadOptionsFunctions): Promise<INodePrope
 }
 
 export async function getTeams(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-	const response = await chatwootApiRequest(
-		this,
-		'GET',
-		await getAccountEndpoint(this, 'teams'),
-	);
+	const response = await chatwootApiRequest(this, 'GET', await getAccountEndpoint(this, 'teams'));
 	return sortOptions(
 		extractArray(response).map((team) => ({
 			name: String(team.name ?? `Team ${String(team.id)}`),
@@ -105,10 +83,7 @@ async function getCustomAttributeOptions(
 	return sortOptions(
 		extractArray(response).map((attribute) => ({
 			name: `${String(attribute.attribute_display_name ?? attribute.attribute_key)} — ${String(attribute.attribute_key)} (${String(attribute.attribute_display_type ?? 'text')})`,
-			value:
-				valueField === 'id'
-					? Number(attribute.id)
-					: String(attribute.attribute_key ?? ''),
+			value: valueField === 'id' ? Number(attribute.id) : String(attribute.attribute_key ?? ''),
 			description: `${String(attribute.attribute_model ?? '')}: ${String(attribute.attribute_description ?? '')}`,
 		})),
 	);

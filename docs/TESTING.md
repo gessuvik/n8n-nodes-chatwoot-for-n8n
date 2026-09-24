@@ -150,10 +150,10 @@ usuario con permisos de administrador; un `403` en ellas no implica un fallo del
 
     ```json
     {
-      "event": "message_created",
-      "deliveryId": "un UUID o null",
-      "signatureVerified": true,
-      "raw": {}
+    	"event": "message_created",
+    	"deliveryId": "un UUID o null",
+    	"signatureVerified": true,
+    	"raw": {}
     }
     ```
 

@@ -9,6 +9,7 @@ import {
 	coerceCustomAttributeValue,
 	extractArray,
 	extractStringArray,
+	filterConversationsByActivity,
 	findExactContact,
 	isDataObject,
 	parseCommaSeparated,
@@ -178,9 +179,7 @@ async function findExactContactThroughApi(
 		if (contact) return { contact, pages };
 
 		const hasMore =
-			isDataObject(response) && isDataObject(response.meta)
-				? response.meta.has_more
-				: undefined;
+			isDataObject(response) && isDataObject(response.meta) ? response.meta.has_more : undefined;
 		if (hasMore === false || candidates.length === 0) break;
 	}
 	return { pages };
@@ -207,11 +206,7 @@ async function paginateByPage(
 		const pageItems = extractArray(response);
 		if (pageItems.length === 0) break;
 		items.push(...pageItems);
-		if (
-			isDataObject(response) &&
-			isDataObject(response.meta) &&
-			response.meta.has_more === false
-		) {
+		if (isDataObject(response) && isDataObject(response.meta) && response.meta.has_more === false) {
 			break;
 		}
 	}
@@ -245,7 +240,9 @@ async function paginateMessages(
 		before = firstId;
 	}
 
-	const deduplicated = [...new Map(messages.map((message) => [String(message.id), message])).values()];
+	const deduplicated = [
+		...new Map(messages.map((message) => [String(message.id), message])).values(),
+	];
 	return {
 		items: returnAll ? deduplicated : deduplicated.slice(Math.max(0, deduplicated.length - limit)),
 		raw: { pages },
@@ -286,7 +283,10 @@ export async function executeChatwootOperation(
 			raw = await request('POST', `${basePath}/contacts`, { body });
 			data = simplifyChatwootResponse(raw);
 		} else if (operation === 'get') {
-			const id = requirePositiveInteger(context.getNodeParameter('contactId', itemIndex), 'Contact ID');
+			const id = requirePositiveInteger(
+				context.getNodeParameter('contactId', itemIndex),
+				'Contact ID',
+			);
 			raw = await request('GET', `${basePath}/contacts/${id}`);
 			data = simplifyChatwootResponse(raw);
 		} else if (operation === 'getMany' || operation === 'search') {
@@ -326,7 +326,10 @@ export async function executeChatwootOperation(
 				data = { found: true, contact: result.contact };
 			}
 		} else if (operation === 'update') {
-			const id = requirePositiveInteger(context.getNodeParameter('contactId', itemIndex), 'Contact ID');
+			const id = requirePositiveInteger(
+				context.getNodeParameter('contactId', itemIndex),
+				'Contact ID',
+			);
 			const fields = context.getNodeParameter('contactUpdateFields', itemIndex, {}) as IDataObject;
 			ensureFields(fields, 'Fields to Update');
 			raw = await request('PATCH', `${basePath}/contacts/${id}`, { body: fields });
@@ -345,7 +348,10 @@ export async function executeChatwootOperation(
 				raw = { searchPages: found.pages, updateResponse: response };
 				data = { action: 'updated', contact: simplifyChatwootResponse(response) };
 			} else {
-				const inboxId = requirePositiveInteger(context.getNodeParameter('inboxId', itemIndex), 'Inbox ID');
+				const inboxId = requirePositiveInteger(
+					context.getNodeParameter('inboxId', itemIndex),
+					'Inbox ID',
+				);
 				const response = await request('POST', `${basePath}/contacts`, {
 					body: { inbox_id: inboxId, ...fields },
 				});
@@ -353,13 +359,19 @@ export async function executeChatwootOperation(
 				data = { action: 'created', contact: simplifyChatwootResponse(response) };
 			}
 		} else if (operation === 'setBlocked') {
-			const id = requirePositiveInteger(context.getNodeParameter('contactId', itemIndex), 'Contact ID');
+			const id = requirePositiveInteger(
+				context.getNodeParameter('contactId', itemIndex),
+				'Contact ID',
+			);
 			raw = await request('PATCH', `${basePath}/contacts/${id}`, {
 				body: { blocked: context.getNodeParameter('blockedState', itemIndex) as boolean },
 			});
 			data = simplifyChatwootResponse(raw);
 		} else if (operation === 'getCustomAttribute' || operation === 'setCustomAttribute') {
-			const id = requirePositiveInteger(context.getNodeParameter('contactId', itemIndex), 'Contact ID');
+			const id = requirePositiveInteger(
+				context.getNodeParameter('contactId', itemIndex),
+				'Contact ID',
+			);
 			const attributeReference = String(context.getNodeParameter('attributeKey', itemIndex));
 			const definition = await findAttributeDefinition(
 				request,
@@ -371,9 +383,10 @@ export async function executeChatwootOperation(
 			if (operation === 'getCustomAttribute') {
 				raw = await request('GET', `${basePath}/contacts/${id}`);
 				const contact = simplifyChatwootResponse(raw);
-				const attributes = isDataObject(contact) && isDataObject(contact.custom_attributes)
-					? contact.custom_attributes
-					: {};
+				const attributes =
+					isDataObject(contact) && isDataObject(contact.custom_attributes)
+						? contact.custom_attributes
+						: {};
 				data = {
 					contactId: id,
 					attributeKey: key,
@@ -391,23 +404,25 @@ export async function executeChatwootOperation(
 				data = simplifyChatwootResponse(raw);
 			}
 		} else if (operation === 'removeCustomAttributes') {
-			const id = requirePositiveInteger(context.getNodeParameter('contactId', itemIndex), 'Contact ID');
+			const id = requirePositiveInteger(
+				context.getNodeParameter('contactId', itemIndex),
+				'Contact ID',
+			);
 			const references = uniqueStrings(
 				context.getNodeParameter('attributeKeys', itemIndex) as unknown[],
 			);
-			if (references.length === 0) throw new Error('Selecciona al menos un atributo para eliminar.');
-			const keys = await resolveAttributeKeys(
-				request,
-				basePath,
-				'contact_attribute',
-				references,
-			);
+			if (references.length === 0)
+				throw new Error('Selecciona al menos un atributo para eliminar.');
+			const keys = await resolveAttributeKeys(request, basePath, 'contact_attribute', references);
 			raw = await request('POST', `${basePath}/contacts/${id}/destroy_custom_attributes`, {
 				body: { custom_attributes: keys },
 			});
 			data = simplifyChatwootResponse(raw);
 		} else if (operation === 'setAdditionalAttribute') {
-			const id = requirePositiveInteger(context.getNodeParameter('contactId', itemIndex), 'Contact ID');
+			const id = requirePositiveInteger(
+				context.getNodeParameter('contactId', itemIndex),
+				'Contact ID',
+			);
 			const selectedKey = String(context.getNodeParameter('additionalAttributeKey', itemIndex));
 			const key =
 				selectedKey === '__custom__'
@@ -422,10 +437,11 @@ export async function executeChatwootOperation(
 				},
 			});
 			data = simplifyChatwootResponse(raw);
-		} else if (
-			['getLabels', 'addLabels', 'removeLabels', 'replaceLabels'].includes(operation)
-		) {
-			const id = requirePositiveInteger(context.getNodeParameter('contactId', itemIndex), 'Contact ID');
+		} else if (['getLabels', 'addLabels', 'removeLabels', 'replaceLabels'].includes(operation)) {
+			const id = requirePositiveInteger(
+				context.getNodeParameter('contactId', itemIndex),
+				'Contact ID',
+			);
 			const endpoint = `${basePath}/contacts/${id}/labels`;
 			if (operation === 'getLabels') {
 				raw = await request('GET', endpoint);
@@ -453,13 +469,22 @@ export async function executeChatwootOperation(
 				data = simplifyChatwootResponse(response);
 			}
 		} else if (operation === 'getConversations') {
-			const id = requirePositiveInteger(context.getNodeParameter('contactId', itemIndex), 'Contact ID');
+			const id = requirePositiveInteger(
+				context.getNodeParameter('contactId', itemIndex),
+				'Contact ID',
+			);
 			raw = await request('GET', `${basePath}/contacts/${id}/conversations`);
 			data = simplifyChatwootResponse(raw);
 		} else if (operation === 'createContactInbox') {
-			const id = requirePositiveInteger(context.getNodeParameter('contactId', itemIndex), 'Contact ID');
+			const id = requirePositiveInteger(
+				context.getNodeParameter('contactId', itemIndex),
+				'Contact ID',
+			);
 			const body: IDataObject = {
-				inbox_id: requirePositiveInteger(context.getNodeParameter('inboxId', itemIndex), 'Inbox ID'),
+				inbox_id: requirePositiveInteger(
+					context.getNodeParameter('inboxId', itemIndex),
+					'Inbox ID',
+				),
 			};
 			const sourceId = optionalString(context.getNodeParameter('sourceId', itemIndex, ''));
 			if (sourceId) body.source_id = sourceId;
@@ -483,8 +508,14 @@ export async function executeChatwootOperation(
 			});
 			data = simplifyChatwootResponse(raw);
 		} else if (operation === 'delete') {
-			ensureConfirmed(context.getNodeParameter('confirmDeletion', itemIndex), 'eliminar el contacto');
-			const id = requirePositiveInteger(context.getNodeParameter('contactId', itemIndex), 'Contact ID');
+			ensureConfirmed(
+				context.getNodeParameter('confirmDeletion', itemIndex),
+				'eliminar el contacto',
+			);
+			const id = requirePositiveInteger(
+				context.getNodeParameter('contactId', itemIndex),
+				'Contact ID',
+			);
 			raw = await request('DELETE', `${basePath}/contacts/${id}`);
 			data = simplifyChatwootResponse(raw);
 		} else {
@@ -493,12 +524,20 @@ export async function executeChatwootOperation(
 	} else if (resource === 'conversation') {
 		if (operation === 'create') {
 			const body: IDataObject = {
-				inbox_id: requirePositiveInteger(context.getNodeParameter('inboxId', itemIndex), 'Inbox ID'),
-				contact_id: requirePositiveInteger(context.getNodeParameter('contactId', itemIndex), 'Contact ID'),
+				inbox_id: requirePositiveInteger(
+					context.getNodeParameter('inboxId', itemIndex),
+					'Inbox ID',
+				),
+				contact_id: requirePositiveInteger(
+					context.getNodeParameter('contactId', itemIndex),
+					'Contact ID',
+				),
 				status: String(context.getNodeParameter('status', itemIndex, 'open')),
 			};
 			const sourceId = optionalString(context.getNodeParameter('sourceId', itemIndex, ''));
-			const initialMessage = optionalString(context.getNodeParameter('initialMessage', itemIndex, ''));
+			const initialMessage = optionalString(
+				context.getNodeParameter('initialMessage', itemIndex, ''),
+			);
 			if (sourceId) body.source_id = sourceId;
 			if (initialMessage) body.message = { content: initialMessage };
 			raw = await request('POST', `${basePath}/conversations`, { body });
@@ -516,6 +555,7 @@ export async function executeChatwootOperation(
 				? 10000
 				: requirePositiveInteger(context.getNodeParameter('limit', itemIndex, 50), 'Limit');
 			const query = context.getNodeParameter('conversationFilters', itemIndex, {}) as IDataObject;
+			const activityRange = context.getNodeParameter('activityRange', itemIndex, {}) as IDataObject;
 			const result = await paginateByPage(
 				request,
 				`${basePath}/conversations`,
@@ -524,7 +564,7 @@ export async function executeChatwootOperation(
 				requestedLimit,
 			);
 			raw = result.raw;
-			data = result.items;
+			data = filterConversationsByActivity(result.items, activityRange);
 		} else {
 			const id = requirePositiveInteger(
 				context.getNodeParameter('conversationId', itemIndex),
@@ -535,7 +575,9 @@ export async function executeChatwootOperation(
 				const status = String(context.getNodeParameter('status', itemIndex));
 				const body: IDataObject = { status };
 				if (status === 'snoozed') {
-					const snoozedUntil = toUnixSeconds(context.getNodeParameter('snoozedUntil', itemIndex, ''));
+					const snoozedUntil = toUnixSeconds(
+						context.getNodeParameter('snoozedUntil', itemIndex, ''),
+					);
 					if (snoozedUntil !== undefined) body.snoozed_until = snoozedUntil;
 				}
 				raw = await request('POST', `${conversationPath}/toggle_status`, { body });
@@ -642,9 +684,7 @@ export async function executeChatwootOperation(
 					body: { custom_attributes: attributes, merge: false },
 				});
 				data = simplifyChatwootResponse(raw);
-			} else if (
-				['getLabels', 'addLabels', 'removeLabels', 'replaceLabels'].includes(operation)
-			) {
+			} else if (['getLabels', 'addLabels', 'removeLabels', 'replaceLabels'].includes(operation)) {
 				const endpoint = `${conversationPath}/labels`;
 				if (operation === 'getLabels') {
 					raw = await request('GET', endpoint);
@@ -793,12 +833,17 @@ export async function executeChatwootOperation(
 			const body: IDataObject = {
 				status: context.getNodeParameter('messageStatus', itemIndex),
 			};
-			const externalError = optionalString(context.getNodeParameter('externalError', itemIndex, ''));
+			const externalError = optionalString(
+				context.getNodeParameter('externalError', itemIndex, ''),
+			);
 			if (externalError) body.external_error = externalError;
 			raw = await request('PATCH', `${messagesPath}/${messageId}`, { body });
 			data = simplifyChatwootResponse(raw);
 		} else if (operation === 'delete') {
-			ensureConfirmed(context.getNodeParameter('confirmDeletion', itemIndex), 'eliminar el mensaje');
+			ensureConfirmed(
+				context.getNodeParameter('confirmDeletion', itemIndex),
+				'eliminar el mensaje',
+			);
 			const messageId = requirePositiveInteger(
 				context.getNodeParameter('messageId', itemIndex),
 				'Message ID',
@@ -847,7 +892,11 @@ export async function executeChatwootOperation(
 				raw = await request('GET', `${endpoint}/${id}`);
 				data = simplifyChatwootResponse(raw);
 			} else if (operation === 'update') {
-				const fields = context.getNodeParameter('attributeUpdateFields', itemIndex, {}) as IDataObject;
+				const fields = context.getNodeParameter(
+					'attributeUpdateFields',
+					itemIndex,
+					{},
+				) as IDataObject;
 				ensureFields(fields, 'Fields to Update');
 				if (typeof fields.attribute_values === 'string') {
 					fields.attribute_values = parseCommaSeparated(fields.attribute_values);
@@ -876,10 +925,10 @@ export async function executeChatwootOperation(
 			raw = await request('POST', endpoint, {
 				body: {
 					label: {
-					title: context.getNodeParameter('labelTitle', itemIndex),
-					description: context.getNodeParameter('labelDescription', itemIndex, ''),
-					color: context.getNodeParameter('labelColor', itemIndex),
-					show_on_sidebar: context.getNodeParameter('showOnSidebar', itemIndex),
+						title: context.getNodeParameter('labelTitle', itemIndex),
+						description: context.getNodeParameter('labelDescription', itemIndex, ''),
+						color: context.getNodeParameter('labelColor', itemIndex),
+						show_on_sidebar: context.getNodeParameter('showOnSidebar', itemIndex),
 					},
 				},
 			});
@@ -895,7 +944,10 @@ export async function executeChatwootOperation(
 				raw = await request('PATCH', `${endpoint}/${id}`, { body: { label: fields } });
 				data = simplifyChatwootResponse(raw);
 			} else if (operation === 'delete') {
-				ensureConfirmed(context.getNodeParameter('confirmDeletion', itemIndex), 'eliminar la etiqueta');
+				ensureConfirmed(
+					context.getNodeParameter('confirmDeletion', itemIndex),
+					'eliminar la etiqueta',
+				);
 				raw = await request('DELETE', `${endpoint}/${id}`);
 				data = simplifyChatwootResponse(raw);
 			} else {
@@ -911,11 +963,11 @@ export async function executeChatwootOperation(
 			raw = await request('POST', endpoint, {
 				body: {
 					agent: {
-					name: context.getNodeParameter('agentName', itemIndex),
-					email: context.getNodeParameter('agentEmail', itemIndex),
-					role: context.getNodeParameter('agentRole', itemIndex),
-					availability: context.getNodeParameter('agentAvailability', itemIndex),
-					auto_offline: context.getNodeParameter('agentAutoOffline', itemIndex),
+						name: context.getNodeParameter('agentName', itemIndex),
+						email: context.getNodeParameter('agentEmail', itemIndex),
+						role: context.getNodeParameter('agentRole', itemIndex),
+						availability: context.getNodeParameter('agentAvailability', itemIndex),
+						auto_offline: context.getNodeParameter('agentAutoOffline', itemIndex),
 					},
 				},
 			});
@@ -928,7 +980,10 @@ export async function executeChatwootOperation(
 				raw = await request('PATCH', `${endpoint}/${id}`, { body: { agent: fields } });
 				data = simplifyChatwootResponse(raw);
 			} else if (operation === 'delete') {
-				ensureConfirmed(context.getNodeParameter('confirmDeletion', itemIndex), 'remover el agente');
+				ensureConfirmed(
+					context.getNodeParameter('confirmDeletion', itemIndex),
+					'remover el agente',
+				);
 				raw = await request('DELETE', `${endpoint}/${id}`);
 				data = simplifyChatwootResponse(raw);
 			} else {
@@ -944,9 +999,9 @@ export async function executeChatwootOperation(
 			raw = await request('POST', endpoint, {
 				body: {
 					team: {
-					name: context.getNodeParameter('teamName', itemIndex),
-					description: context.getNodeParameter('teamDescription', itemIndex, ''),
-					allow_auto_assign: context.getNodeParameter('teamAutoAssign', itemIndex),
+						name: context.getNodeParameter('teamName', itemIndex),
+						description: context.getNodeParameter('teamDescription', itemIndex, ''),
+						allow_auto_assign: context.getNodeParameter('teamAutoAssign', itemIndex),
 					},
 				},
 			});
@@ -963,15 +1018,18 @@ export async function executeChatwootOperation(
 				raw = await request('PATCH', teamPath, { body: { team: fields } });
 				data = simplifyChatwootResponse(raw);
 			} else if (operation === 'delete') {
-				ensureConfirmed(context.getNodeParameter('confirmDeletion', itemIndex), 'eliminar el equipo');
+				ensureConfirmed(
+					context.getNodeParameter('confirmDeletion', itemIndex),
+					'eliminar el equipo',
+				);
 				raw = await request('DELETE', teamPath);
 				data = simplifyChatwootResponse(raw);
 			} else if (operation === 'getMembers') {
 				raw = await request('GET', `${teamPath}/team_members`);
 				data = simplifyChatwootResponse(raw);
 			} else if (['addMembers', 'replaceMembers', 'removeMembers'].includes(operation)) {
-				const userIds = (context.getNodeParameter('agentIds', itemIndex) as unknown[]).map((value) =>
-					requirePositiveInteger(value, 'Agent ID'),
+				const userIds = (context.getNodeParameter('agentIds', itemIndex) as unknown[]).map(
+					(value) => requirePositiveInteger(value, 'Agent ID'),
 				);
 				if (userIds.length === 0 && operation !== 'replaceMembers') {
 					throw new Error('Selecciona al menos un agente.');

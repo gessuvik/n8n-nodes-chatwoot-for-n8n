@@ -47,9 +47,7 @@ function entityType(entity: IDataObject | null): string {
 
 function contactFromConversation(conversation: IDataObject | null): IDataObject | null {
 	const sender = nestedObject(nestedObject(conversation, 'meta'), 'sender');
-	return sender && (entityType(sender) === 'contact' || entityType(sender) === '')
-		? sender
-		: null;
+	return sender && (entityType(sender) === 'contact' || entityType(sender) === '') ? sender : null;
 }
 
 function userFromConversation(conversation: IDataObject | null): IDataObject | null {

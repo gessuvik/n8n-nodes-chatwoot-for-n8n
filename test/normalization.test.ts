@@ -29,17 +29,16 @@ describe('normalizeWebhookPayload', () => {
 		expect(result.signatureVerified).toBe(true);
 	});
 
-	it.each([
-		'conversation_created',
-		'conversation_status_changed',
-		'conversation_updated',
-	])('exposes conversation and contact for %s', (event) => {
-		const result = normalizeWebhookPayload(webhookFixtures[event]);
+	it.each(['conversation_created', 'conversation_status_changed', 'conversation_updated'])(
+		'exposes conversation and contact for %s',
+		(event) => {
+			const result = normalizeWebhookPayload(webhookFixtures[event]);
 
-		expect(result.conversation?.id).toBe(42);
-		expect(result.contact?.id).toBe(7);
-		expect(result.account?.id).toBe(1);
-	});
+			expect(result.conversation?.id).toBe(42);
+			expect(result.contact?.id).toBe(7);
+			expect(result.account?.id).toBe(1);
+		},
+	);
 
 	it.each(['message_created', 'message_updated'])('exposes message fields for %s', (event) => {
 		const result = normalizeWebhookPayload(webhookFixtures[event]);

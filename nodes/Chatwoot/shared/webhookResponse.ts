@@ -25,7 +25,11 @@ export function unwrapWebhookList(response: unknown): ChatwootWebhook[] {
 }
 
 export function unwrapWebhook(response: unknown): ChatwootWebhook {
-	const value = wrappedPayload(response)?.webhook ?? response;
+	const wrapped = wrappedPayload(response);
+	const value =
+		wrapped !== null && Object.prototype.hasOwnProperty.call(wrapped, 'webhook')
+			? wrapped.webhook
+			: response;
 	const webhook = asRecord(value);
 
 	if (!webhook) {

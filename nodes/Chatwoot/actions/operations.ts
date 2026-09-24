@@ -115,10 +115,10 @@ export const OPERATION_CATALOG: Record<ChatwootResource, ChatwootOperationMeta[]
 			path: `${accountPath}/contacts/{contact_id}`,
 		},
 		{
-			name: 'Upsert',
+			name: 'Create or Update',
 			value: 'upsert',
 			action: 'Create or update a contact',
-			description: 'Find an exact contact and update it, or create it when no match exists',
+			description: 'Create a new record, or update the current one if it already exists (upsert)',
 			method: 'POST',
 			path: `${accountPath}/contacts/search -> contacts`,
 		},
@@ -312,7 +312,8 @@ export const OPERATION_CATALOG: Record<ChatwootResource, ChatwootOperationMeta[]
 			name: 'Set Custom Attribute',
 			value: 'setCustomAttribute',
 			action: 'Set a conversation custom attribute',
-			description: 'Load current attributes and the definition, convert the value, and merge only that key',
+			description:
+				'Load current attributes and the definition, convert the value, and merge only that key',
 			method: 'POST',
 			path: `${accountPath}/conversations/{conversation_id} -> custom_attributes`,
 		},
@@ -688,7 +689,7 @@ function operationOptions(resource: ChatwootResource): INodePropertyOptions[] {
 		name: operation.name,
 		value: operation.value,
 		action: operation.action,
-		description: `${operation.description}. ${operation.method} ${operation.path}`,
+		description: ',. , ,.',
 	}));
 }
 
