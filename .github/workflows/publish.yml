@@ -53,11 +53,8 @@ jobs:
         # "edgesOut" resolution bug with this dependency tree.
         run: npm install --legacy-peer-deps
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
-
-      - name: Publish to npm
-        run: npm publish --provenance --access public
+      - name: Release
+        # n8n-node release detects CI (GITHUB_ACTIONS) and runs lint + build,
+        # then `npm publish` with RELEASE_MODE + NPM_CONFIG_PROVENANCE set.
+        # RELEASE_MODE is also what satisfies the `prepublishOnly` gate.
+        run: npm run release
