@@ -45,13 +45,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          # Required for npm's OIDC (Trusted Publishing) flow.
-          registry-url: 'https://registry.npmjs.org/'
+          # No registry-url here: for OIDC Trusted Publishing, setting it makes
+          # setup-node write a placeholder _authToken that npm prefers over the
+          # OIDC exchange (npm/cli#8730, actions/setup-node#1477).
 
       - name: Install dependencies
         # No package-lock.json is committed; legacy peer deps avoids the npm 10
         # "edgesOut" resolution bug with this dependency tree.
         run: npm install --legacy-peer-deps
+
+      - name: Upgrade npm
+        # OIDC trusted publishing (npm -> registry auth exchange) requires
+        # npm >= 11.5.1. Node 22 bundles npm 10.x, which signs provenance but
+        # cannot do the OIDC auth exchange, surfacing as a misleading 404.
+        run: npm install -g npm@latest
 
       - name: Release
         # n8n-node release detects CI (GITHUB_ACTIONS) and runs lint + build,

@@ -5,7 +5,7 @@
 	"homepage": "https://www.npmjs.com/package/n8n-nodes-chatwoot-for-n8n",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/gessuvik/n8n-nodes-chatwoot-for-n8n.git"
+		"url": "https://github.com/gessuvik/n8n-nodes-chatwoot-for-n8n.git"
 	},
 	"bugs": {
 		"url": "https://github.com/gessuvik/n8n-nodes-chatwoot-for-n8n/issues"
